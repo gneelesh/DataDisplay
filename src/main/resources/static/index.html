@@ -1,0 +1,91 @@
+<html>
+
+<head>
+<title>First AJS Page</title>
+
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	rel="stylesheet" type="text/css" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+</head>
+
+<body>
+
+	<b>Country vs State</b>
+
+	<div ng-app="myApp" ng-controller="myCtrl" ng-init="initPage()">
+
+		Country : <select width="200" ng-model="ngcountry" name="ngcountry"
+			aria-label="ngcountry" ng-change="countryChange(ngcountry)"
+			style="font-family: Calibri, Verdana, Arial, Helvetica, sans-serif; font-size: 14px;">
+			<option value="">Choose Country</option>
+			<option ng-repeat="c in data | orderBy:name" value="{{c.name}}">{{c.name}}</option>
+		</select> Country : <select width="200" ng-model="ngstate" name="ngstate"
+			aria-label="ngstate" ng-change="stateChange(ngstate)"<option
+				value="">Choose State</option>
+			<option ng-repeat="s in country.state | orderBy:name"
+				value="{{s.name}}">{{s.name}}</option>
+		</select> <br /> <br /> Showing : {{country.name}} - {{state}}
+	</div>
+	
+	<h1>check this example</h1>
+	<p>Angular can call internal server's restful API with simple method. This gives you freedom to write anything on server side when the page will dynamically intereact with the services. </p>
+	<p>HTML itself is active - it can call internal API. First call at the time page load it will call the service and get all the data. you can try running http://localhost:8080/getcountryjson to see the json. On selection of Country it will select the state. </p>
+	
+	
+	
+</body>
+</html>
+
+<script type="text/javascript">
+	var app = angular.module('myApp', []);
+	
+	app.controller('myCtrl', function($scope, $location , $http) {
+		$scope.weburl = $location.absUrl();
+		$scope.urlhost = $location.host();
+		$scope.urlport = $location.port();
+		$scope.urlprotocol = $location.protocol();
+		
+		
+		$scope.countryChange = function(c) { 
+			console.log( c ) ;
+			angular.forEach( $scope.data , function ( value , key ) { 
+				if ( value.name == c ) { 
+					$scope.country = value ; 
+					console.log( key + ':' + value.name +value  ) ;
+				}
+			});
+		};
+		
+		$scope.stateChange = function(c) {
+			console.log("State Change Function : " +  c ) ; 
+			$scope.state = c ;
+		};
+		
+		
+		$scope.initPage = function() { 
+			var serviceURI = $scope.weburl  + "getcountryjson" ; 
+			console.log("Calling ... " + serviceURI )  ; 
+			$http.get( serviceURI  )
+			.then( function (response) { 
+				console.log( "Status : " + status ) ; 
+				$scope.response = "Data: " + response.data +
+                "<br />status: " + response.status +
+                "<br />headers: " + response.header +
+                "<br />config: " + response.config;
+				$scope.data = response.data ; 
+			})
+			.catch(function( response) { 
+				console.error('Error occurred:', response.status, response.data);
+				console.log(response) ; 
+				
+			}).finally(function() {
+				 console.log("Task Finished.");
+			}); 
+		}
+
+	});
+
+</script>
+
