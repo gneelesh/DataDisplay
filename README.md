@@ -1,0 +1,1 @@
+Example to show how to use angularJS with simple restful call to springboot. 
